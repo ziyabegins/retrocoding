@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RetroCode - Synthwave Editor</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Courier+Prime:wght@400;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Orbitron', monospace;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a0a1a 25%, #0a0a2a 50%, #1a0a1a 75%, #0a0a0a 100%);
+            color: #ff00ff;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+        
+        .grid-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(255, 0, 255, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 0, 255, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: -1;
+            animation: gridPulse 4s ease-in-out infinite;
+        }
+        
+        @keyframes gridPulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.1; }
+        }
+        
+        .header {
+            background: rgba(0, 0, 0, 0.8);
+            border-bottom: 2px solid #ff00ff;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
+        }
+        
+        .logo {
+            font-size: 2rem;
+            font-weight: 900;
+            text-shadow: 0 0 20px #ff00ff;
+            animation: neonGlow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes neonGlow {
+            from { text-shadow: 0 0 20px #ff00ff, 0 0 30px #ff00ff; }
+            to { text-shadow: 0 0 30px #ff00ff, 0 0 40px #ff00ff, 0 0 50px #ff00ff; }
+        }
+        
+        .controls {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        .retro-button {
+            background: linear-gradient(45deg, #ff00ff, #00ffff);
+            border: none;
+            color: #000;
+            padding: 0.5rem 1rem;
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .retro-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 0, 255, 0.5);
+        }
+        
+        .theme-selector {
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #ff00ff;
+            color: #ff00ff;
+            padding: 0.5rem;
+            font-family: 'Orbitron', monospace;
+            border-radius: 4px;
+        }
+        
+        .main-container {
+            display: flex;
+            height: calc(100vh - 100px);
+            margin: 2rem;
+            gap: 2rem;
+        }
+        
+        .editor-panel {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #ff00ff;
+            border-radius: 8px;
+            box-shadow: 0 0 30px rgba(255, 0, 255, 0.3);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .panel-header {
+            background: linear-gradient(90deg, rgba(255, 0, 255, 0.2), rgba(0, 255, 255, 0.2));
+            padding: 1rem;
+            border-bottom: 1px solid #ff00ff;
+            font-weight: 700;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .code-editor {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.95);
+            border: none;
+            color: #00ffff;
+            font-family: 'Courier Prime', monospace;
+            font-size: 14px;
+            padding: 1rem;
+            resize: none;
+            outline: none;
+            line-height: 1.6;
+        }
+        
+        .code-editor:focus {
+            box-shadow: inset 0 0 20px rgba(0, 255, 255, 0.2);
+        }
+        
+        .output-panel {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #00ffff;
+            border-radius: 8px;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .output-content {
+            flex: 1;
+            padding: 1rem;
+            font-family: 'Courier Prime', monospace;
+            font-size: 14px;
+            color: #00ffff;
+            white-space: pre-wrap;
+            overflow-y: auto;
+        }
+        
+        .status-bar {
+            background: rgba(0, 0, 0, 0.8);
+            border-top: 1px solid #ff00ff;
+            padding: 0.5rem 2rem;
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            font-size: 0.9rem;
+        }
+        
+        .floating-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .floating-element {
+            position: absolute;
+            color: rgba(255, 0, 255, 0.3);
+            font-family: 'Courier Prime', monospace;
+            font-size: 12px;
+            animation: float 15s linear infinite;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+        }
+        
+        .scanline {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #ff00ff, transparent);
+            animation: scanline 3s ease-in-out infinite;
+            z-index: 1000;
+            pointer-events: none;
+        }
+        
+        @keyframes scanline {
+            0% { transform: translateY(-2px); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateY(100vh); opacity: 0; }
+        }
+        
+        .line-numbers {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 3rem;
+            background: rgba(255, 0, 255, 0.1);
+            border-right: 1px solid rgba(255, 0, 255, 0.3);
+            padding: 1rem 0.5rem;
+            font-family: 'Courier Prime', monospace;
+            font-size: 12px;
+            color: rgba(255, 0, 255, 0.6);
+            line-height: 1.6;
+            user-select: none;
+        }
+        
+        .editor-wrapper {
+            position: relative;
+            flex: 1;
+        }
+        
+        .code-editor {
+            padding-left: 4rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="grid-background"></div>
+    <div class="floating-elements" id="floatingElements"></div>
+    <div class="scanline"></div>
+    
+    <header class="header">
+        <div class="logo">RetroCode_1985</div>
+        <div class="controls">
+            <select class="theme-selector" id="themeSelector">
+                <option value="synthwave">Synthwave</option>
+                <option value="cyberpunk">Cyberpunk</option>
+                <option value="neon">Neon Dreams</option>
+                <option value="vaporwave">Vaporwave</option>
+            </select>
+            <button class="retro-button" onclick="runCode()">Execute</button>
+            <button class="retro-button" onclick="clearOutput()">Clear</button>
+            <button class="retro-button" onclick="saveCode()">Save</button>
+        </div>
+    </header>
+    
+    <div class="main-container">
+        <div class="editor-panel">
+            <div class="panel-header">Code Terminal</div>
+            <div class="editor-wrapper">
+                <div class="line-numbers" id="lineNumbers"></div>
+                <textarea class="code-editor" id="codeEditor" placeholder="// Welcome to RetroCode 1985
+// Type your JavaScript code here...
+
+console.log('Hello, Synthwave World!');
+
+// Sample retro animation
+function retroAnimation() {
+    const colors = ['#ff00ff', '#00ffff', '#ffff00'];
+    let i = 0;
+    
+    setInterval(() => {
+        document.body.style.borderColor = colors[i % colors.length];
+        i++;
+    }, 500);
+}
+
+retroAnimation();"></textarea>
+            </div>
+        </div>
+        
+        <div class="output-panel">
+            <div class="panel-header">Output Console</div>
+            <div class="output-content" id="outputContent">System ready...\nWelcome to RetroCode 1985\n> _</div>
+        </div>
+    </div>
+    
+    <div class="status-bar">
+        <span>Status: Ready | Line: 1 | Col: 1 | Mode: JavaScript</span>
+    </div>
+    
+    <script>
+        // Floating code elements
+        const floatingElements = document.getElementById('floatingElements');
+        const codeSnippets = [
+            'function()', 'var x = 0;', 'if (true)', '// comment', 'return false;', 
+            'console.log()', 'array.push()', 'object.method()', 'async/await', 'promise.then()'
+        ];
+        
+        function createFloatingElement() {
+            const element = document.createElement('div');
+            element.className = 'floating-element';
+            element.textContent = codeSnippets[Math.floor(Math.random() * codeSnippets.length)];
+            element.style.left = Math.random() * 100 + '%';
+            element.style.animationDelay = Math.random() * 5 + 's';
+            floatingElements.appendChild(element);
+            
+            setTimeout(() => {
+                element.remove();
+            }, 15000);
+        }
+        
+        // Create floating elements periodically
+        setInterval(createFloatingElement, 2000);
+        
+        // Line numbers
+        const codeEditor = document.getElementById('codeEditor');
+        const lineNumbers = document.getElementById('lineNumbers');
+        
+        function updateLineNumbers() {
+            const lines = codeEditor.value.split('\n');
+            let numbers = '';
+            for (let i = 1; i <= lines.length; i++) {
+                numbers += i + '\n';
+            }
+            lineNumbers.textContent = numbers;
+        }
+        
+        codeEditor.addEventListener('input', updateLineNumbers);
+        codeEditor.addEventListener('scroll', () => {
+            lineNumbers.scrollTop = codeEditor.scrollTop;
+        });
+        
+        // Initialize line numbers
+        updateLineNumbers();
+        
+        // Code execution
+        function runCode() {
+            const code = codeEditor.value;
+            const outputContent = document.getElementById('outputContent');
+            
+            try {
+                // Clear previous output
+                outputContent.textContent = 'Executing code...\n\n';
+                
+                // Override console.log to capture output
+                const originalLog = console.log;
+                const outputs = [];
+                console.log = function(...args) {
+                    outputs.push(args.join(' '));
+                    originalLog.apply(console, args);
+                };
+                
+                // Execute the code
+                eval(code);
+                
+                // Restore console.log
+                console.log = originalLog;
+                
+                // Display output
+                if (outputs.length > 0) {
+                    outputContent.textContent += outputs.join('\n') + '\n';
+                } else {
+                    outputContent.textContent += 'Code executed successfully (no output)\n';
+                }
+                
+                outputContent.textContent += '\n> Code execution complete';
+                
+            } catch (error) {
+                outputContent.textContent += 'Error: ' + error.message + '\n';
+                outputContent.textContent += '\n> Code execution failed';
+            }
+        }
+        
+        function clearOutput() {
+            document.getElementById('outputContent').textContent = 'Output cleared...\n> _';
+        }
+        
+        function saveCode() {
+            const code = codeEditor.value;
+            const blob = new Blob([code], { type: 'text/javascript' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'retro_code_' + new Date().getTime() + '.js';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+        
+        // Theme switching
+        const themeSelector = document.getElementById('themeSelector');
+        const themes = {
+            synthwave: {
+                primary: '#ff00ff',
+                secondary: '#00ffff',
+                accent: '#ffff00'
+            },
+            cyberpunk: {
+                primary: '#00ff00',
+                secondary: '#ff0080',
+                accent: '#0080ff'
+            },
+            neon: {
+                primary: '#ff6600',
+                secondary: '#00ff99',
+                accent: '#ff0099'
+            },
+            vaporwave: {
+                primary: '#ff00aa',
+                secondary: '#00aaff',
+                accent: '#aa00ff'
+            }
+        };
+        
+        themeSelector.addEventListener('change', (e) => {
+            const theme = themes[e.target.value];
+            document.documentElement.style.setProperty('--primary-color', theme.primary);
+            document.documentElement.style.setProperty('--secondary-color', theme.secondary);
+            document.documentElement.style.setProperty('--accent-color', theme.accent);
+        });
+        
+        // Typing sound effect (visual feedback)
+        codeEditor.addEventListener('input', () => {
+            codeEditor.style.boxShadow = 'inset 0 0 20px rgba(0, 255, 255, 0.5)';
+            setTimeout(() => {
+                codeEditor.style.boxShadow = 'inset 0 0 20px rgba(0, 255, 255, 0.2)';
+            }, 100);
+        });
+        
+        // Random glitch effect
+        function glitchEffect() {
+            const logo = document.querySelector('.logo');
+            const originalText = logo.textContent;
+            const glitchChars = '!@#$%^&*()_+[]{}|;:,.<>?';
+            
+            let glitchedText = '';
+            for (let i = 0; i < originalText.length; i++) {
+                if (Math.random() < 0.1) {
+                    glitchedText += glitchChars[Math.floor(Math.random() * glitchChars.length)];
+                } else {
+                    glitchedText += originalText[i];
+                }
+            }
+            
+            logo.textContent = glitchedText;
+            setTimeout(() => {
+                logo.textContent = originalText;
+            }, 100);
+        }
+        
+        // Random glitch every 10-20 seconds
+        setInterval(glitchEffect, Math.random() * 10000 + 10000);
+    </script>
+</body>
+</html>
