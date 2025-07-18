@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RetroCode - Synthwave Editor</title>
+    <title>RetroCode City - Anime Compiler</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Courier+Prime:wght@400;700&display=swap');
         
@@ -15,39 +15,155 @@
         
         body {
             font-family: 'Orbitron', monospace;
-            background: linear-gradient(135deg, #0a0a0a 0%, #1a0a1a 25%, #0a0a2a 50%, #1a0a1a 75%, #0a0a0a 100%);
+            background: #0a0a0a;
             color: #ff00ff;
             overflow-x: hidden;
             min-height: 100vh;
+            position: relative;
         }
         
-        .grid-background {
+        .city-background {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-image: 
-                linear-gradient(rgba(255, 0, 255, 0.1) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 0, 255, 0.1) 1px, transparent 1px);
-            background-size: 50px 50px;
-            z-index: -1;
-            animation: gridPulse 4s ease-in-out infinite;
+            z-index: -3;
+            background: linear-gradient(180deg, #1a0a2a 0%, #2a1a3a 30%, #3a2a4a 60%, #1a0a2a 100%);
         }
         
-        @keyframes gridPulse {
+        .city-skyline {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 40%;
+            background: linear-gradient(to top, #000 0%, #1a0a2a 100%);
+        }
+        
+        .building {
+            position: absolute;
+            bottom: 0;
+            background: linear-gradient(to top, #0a0a0a, #1a1a1a);
+            border: 1px solid #ff00ff;
+            box-shadow: 0 0 20px rgba(255, 0, 255, 0.3);
+        }
+        
+        .building::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent 0%, rgba(255, 0, 255, 0.1) 50%, transparent 100%);
+            animation: buildingGlow 3s ease-in-out infinite;
+        }
+        
+        @keyframes buildingGlow {
             0%, 100% { opacity: 0.3; }
-            50% { opacity: 0.1; }
+            50% { opacity: 0.8; }
+        }
+        
+        .building-windows {
+            position: absolute;
+            top: 10%;
+            left: 10%;
+            width: 80%;
+            height: 80%;
+            background-image: 
+                radial-gradient(circle at 25% 25%, #00ffff 1px, transparent 1px),
+                radial-gradient(circle at 75% 25%, #ff00ff 1px, transparent 1px),
+                radial-gradient(circle at 25% 75%, #ffff00 1px, transparent 1px),
+                radial-gradient(circle at 75% 75%, #00ff00 1px, transparent 1px);
+            background-size: 20px 20px;
+            animation: windowFlicker 2s infinite;
+        }
+        
+        @keyframes windowFlicker {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 0.4; }
+        }
+        
+        .motorcycle {
+            position: absolute;
+            bottom: 15%;
+            width: 100px;
+            height: 40px;
+            background: linear-gradient(45deg, #ff00ff, #00ffff);
+            border-radius: 20px;
+            animation: rideMotorcycle 15s linear infinite;
+            z-index: -2;
+        }
+        
+        .motorcycle::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            width: 30px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            border: 2px solid #00ffff;
+        }
+        
+        .motorcycle::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 10px;
+            width: 15px;
+            height: 15px;
+            background: #333;
+            border-radius: 50%;
+            box-shadow: 60px 0 0 #333;
+        }
+        
+        @keyframes rideMotorcycle {
+            0% { transform: translateX(-150px) scale(0.5); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateX(calc(100vw + 150px)) scale(1.2); opacity: 0; }
+        }
+        
+        .neon-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: #ff00ff;
+            border-radius: 50%;
+            animation: particleFloat 10s linear infinite;
+        }
+        
+        @keyframes particleFloat {
+            0% { transform: translateY(100vh) translateX(0px); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100px) translateX(200px); opacity: 0; }
         }
         
         .header {
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.9);
             border-bottom: 2px solid #ff00ff;
             padding: 1rem 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
+            box-shadow: 0 0 30px rgba(255, 0, 255, 0.5);
+            backdrop-filter: blur(10px);
+            position: relative;
+            z-index: 1000;
         }
         
         .logo {
@@ -80,6 +196,23 @@
             transition: all 0.3s ease;
             text-transform: uppercase;
             letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .retro-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+        
+        .retro-button:hover::before {
+            left: 100%;
         }
         
         .retro-button:hover {
@@ -87,45 +220,57 @@
             box-shadow: 0 5px 15px rgba(255, 0, 255, 0.5);
         }
         
-        .theme-selector {
-            background: rgba(0, 0, 0, 0.8);
-            border: 1px solid #ff00ff;
-            color: #ff00ff;
-            padding: 0.5rem;
-            font-family: 'Orbitron', monospace;
-            border-radius: 4px;
-        }
-        
         .main-container {
             display: flex;
             height: calc(100vh - 100px);
             margin: 2rem;
             gap: 2rem;
+            position: relative;
+            z-index: 100;
         }
         
         .editor-panel {
             flex: 1;
-            background: rgba(0, 0, 0, 0.9);
+            background: rgba(0, 0, 0, 0.85);
             border: 2px solid #ff00ff;
             border-radius: 8px;
             box-shadow: 0 0 30px rgba(255, 0, 255, 0.3);
             display: flex;
             flex-direction: column;
+            backdrop-filter: blur(10px);
         }
         
         .panel-header {
-            background: linear-gradient(90deg, rgba(255, 0, 255, 0.2), rgba(0, 255, 255, 0.2));
+            background: linear-gradient(90deg, rgba(255, 0, 255, 0.3), rgba(0, 255, 255, 0.3));
             padding: 1rem;
             border-bottom: 1px solid #ff00ff;
             font-weight: 700;
             text-align: center;
             text-transform: uppercase;
             letter-spacing: 2px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .panel-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            animation: headerScan 3s linear infinite;
+        }
+        
+        @keyframes headerScan {
+            0% { left: -100%; }
+            100% { left: 100%; }
         }
         
         .code-editor {
             flex: 1;
-            background: rgba(0, 0, 0, 0.95);
+            background: rgba(0, 0, 0, 0.9);
             border: none;
             color: #00ffff;
             font-family: 'Courier Prime', monospace;
@@ -134,83 +279,11 @@
             resize: none;
             outline: none;
             line-height: 1.6;
+            padding-left: 4rem;
         }
         
         .code-editor:focus {
             box-shadow: inset 0 0 20px rgba(0, 255, 255, 0.2);
-        }
-        
-        .output-panel {
-            flex: 1;
-            background: rgba(0, 0, 0, 0.9);
-            border: 2px solid #00ffff;
-            border-radius: 8px;
-            box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .output-content {
-            flex: 1;
-            padding: 1rem;
-            font-family: 'Courier Prime', monospace;
-            font-size: 14px;
-            color: #00ffff;
-            white-space: pre-wrap;
-            overflow-y: auto;
-        }
-        
-        .status-bar {
-            background: rgba(0, 0, 0, 0.8);
-            border-top: 1px solid #ff00ff;
-            padding: 0.5rem 2rem;
-            display: flex;
-            justify-content: between;
-            align-items: center;
-            font-size: 0.9rem;
-        }
-        
-        .floating-elements {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: -1;
-        }
-        
-        .floating-element {
-            position: absolute;
-            color: rgba(255, 0, 255, 0.3);
-            font-family: 'Courier Prime', monospace;
-            font-size: 12px;
-            animation: float 15s linear infinite;
-        }
-        
-        @keyframes float {
-            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
-        }
-        
-        .scanline {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, #ff00ff, transparent);
-            animation: scanline 3s ease-in-out infinite;
-            z-index: 1000;
-            pointer-events: none;
-        }
-        
-        @keyframes scanline {
-            0% { transform: translateY(-2px); opacity: 0; }
-            50% { opacity: 1; }
-            100% { transform: translateY(100vh); opacity: 0; }
         }
         
         .line-numbers {
@@ -226,6 +299,7 @@
             color: rgba(255, 0, 255, 0.6);
             line-height: 1.6;
             user-select: none;
+            height: 100%;
         }
         
         .editor-wrapper {
@@ -233,91 +307,222 @@
             flex: 1;
         }
         
-        .code-editor {
-            padding-left: 4rem;
+        .output-panel {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.85);
+            border: 2px solid #00ffff;
+            border-radius: 8px;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
+            display: flex;
+            flex-direction: column;
+            backdrop-filter: blur(10px);
+        }
+        
+        .output-content {
+            flex: 1;
+            padding: 1rem;
+            font-family: 'Courier Prime', monospace;
+            font-size: 14px;
+            color: #00ffff;
+            white-space: pre-wrap;
+            overflow-y: auto;
+            background: rgba(0, 0, 0, 0.9);
+        }
+        
+        .rain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .raindrop {
+            position: absolute;
+            width: 1px;
+            height: 20px;
+            background: linear-gradient(to bottom, transparent, #00ffff, transparent);
+            animation: rainFall 2s linear infinite;
+        }
+        
+        @keyframes rainFall {
+            0% { transform: translateY(-100px); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(100vh); opacity: 0; }
+        }
+        
+        .status-bar {
+            background: rgba(0, 0, 0, 0.9);
+            border-top: 1px solid #ff00ff;
+            padding: 0.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            position: relative;
+            z-index: 1000;
+        }
+        
+        .language-selector {
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #ff00ff;
+            color: #ff00ff;
+            padding: 0.5rem;
+            font-family: 'Orbitron', monospace;
+            border-radius: 4px;
         }
     </style>
 </head>
 <body>
-    <div class="grid-background"></div>
-    <div class="floating-elements" id="floatingElements"></div>
-    <div class="scanline"></div>
+    <div class="city-background">
+        <div class="city-skyline"></div>
+    </div>
+    
+    <div class="neon-particles" id="neonParticles"></div>
+    <div class="rain" id="rain"></div>
     
     <header class="header">
-        <div class="logo">RetroCode_1985</div>
+        <div class="logo">RetroCode_City</div>
         <div class="controls">
-            <select class="theme-selector" id="themeSelector">
-                <option value="synthwave">Synthwave</option>
-                <option value="cyberpunk">Cyberpunk</option>
-                <option value="neon">Neon Dreams</option>
-                <option value="vaporwave">Vaporwave</option>
+            <select class="language-selector" id="languageSelector">
+                <option value="javascript">JavaScript</option>
+                <option value="python">Python</option>
+                <option value="html">HTML</option>
+                <option value="css">CSS</option>
             </select>
-            <button class="retro-button" onclick="runCode()">Execute</button>
+            <button class="retro-button" onclick="compileCode()">Compile</button>
+            <button class="retro-button" onclick="runCode()">Run</button>
             <button class="retro-button" onclick="clearOutput()">Clear</button>
-            <button class="retro-button" onclick="saveCode()">Save</button>
         </div>
     </header>
     
     <div class="main-container">
         <div class="editor-panel">
-            <div class="panel-header">Code Terminal</div>
+            <div class="panel-header">Code Editor - Neo Tokyo</div>
             <div class="editor-wrapper">
                 <div class="line-numbers" id="lineNumbers"></div>
-                <textarea class="code-editor" id="codeEditor" placeholder="// Welcome to RetroCode 1985
-// Type your JavaScript code here...
+                <textarea class="code-editor" id="codeEditor" placeholder="// Welcome to RetroCode City
+// Your code compilation zone...
 
-console.log('Hello, Synthwave World!');
+console.log('Riding through Neo Tokyo...');
 
-// Sample retro animation
-function retroAnimation() {
-    const colors = ['#ff00ff', '#00ffff', '#ffff00'];
-    let i = 0;
+// Sample animation
+function neonEffect() {
+    const colors = ['#ff00ff', '#00ffff', '#ffff00', '#ff6600'];
+    let index = 0;
     
     setInterval(() => {
-        document.body.style.borderColor = colors[i % colors.length];
-        i++;
-    }, 500);
+        document.body.style.boxShadow = `0 0 50px ${colors[index % colors.length]}`;
+        index++;
+    }, 1000);
 }
 
-retroAnimation();"></textarea>
+neonEffect();"></textarea>
             </div>
         </div>
         
         <div class="output-panel">
-            <div class="panel-header">Output Console</div>
-            <div class="output-content" id="outputContent">System ready...\nWelcome to RetroCode 1985\n> _</div>
+            <div class="panel-header">Output Terminal</div>
+            <div class="output-content" id="outputContent">System initialized...
+Neo Tokyo compiler ready...
+Motorcycle engines warming up...
+> Ready for compilation_</div>
         </div>
     </div>
     
     <div class="status-bar">
-        <span>Status: Ready | Line: 1 | Col: 1 | Mode: JavaScript</span>
+        <span>Status: Ready | Motorcycles: 3 active | Neon: Online</span>
+        <span id="currentTime"></span>
     </div>
     
     <script>
-        // Floating code elements
-        const floatingElements = document.getElementById('floatingElements');
-        const codeSnippets = [
-            'function()', 'var x = 0;', 'if (true)', '// comment', 'return false;', 
-            'console.log()', 'array.push()', 'object.method()', 'async/await', 'promise.then()'
-        ];
+        // Create city buildings
+        function createBuildings() {
+            const cityContainer = document.querySelector('.city-skyline');
+            const buildingCount = 15;
+            
+            for (let i = 0; i < buildingCount; i++) {
+                const building = document.createElement('div');
+                building.className = 'building';
+                
+                const width = Math.random() * 80 + 40;
+                const height = Math.random() * 200 + 100;
+                const left = (i / buildingCount) * 100;
+                
+                building.style.width = width + 'px';
+                building.style.height = height + 'px';
+                building.style.left = left + '%';
+                
+                const windows = document.createElement('div');
+                windows.className = 'building-windows';
+                building.appendChild(windows);
+                
+                cityContainer.appendChild(building);
+            }
+        }
         
-        function createFloatingElement() {
-            const element = document.createElement('div');
-            element.className = 'floating-element';
-            element.textContent = codeSnippets[Math.floor(Math.random() * codeSnippets.length)];
-            element.style.left = Math.random() * 100 + '%';
-            element.style.animationDelay = Math.random() * 5 + 's';
-            floatingElements.appendChild(element);
+        // Create motorcycles
+        function createMotorcycle() {
+            const motorcycle = document.createElement('div');
+            motorcycle.className = 'motorcycle';
+            motorcycle.style.animationDelay = Math.random() * 5 + 's';
+            motorcycle.style.bottom = Math.random() * 20 + 10 + '%';
+            
+            document.body.appendChild(motorcycle);
             
             setTimeout(() => {
-                element.remove();
+                motorcycle.remove();
             }, 15000);
         }
         
-        // Create floating elements periodically
-        setInterval(createFloatingElement, 2000);
+        // Create neon particles
+        function createParticle() {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.animationDelay = Math.random() * 3 + 's';
+            
+            const colors = ['#ff00ff', '#00ffff', '#ffff00', '#ff6600'];
+            particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+            
+            document.getElementById('neonParticles').appendChild(particle);
+            
+            setTimeout(() => {
+                particle.remove();
+            }, 10000);
+        }
         
-        // Line numbers
+        // Create rain
+        function createRain() {
+            const raindrop = document.createElement('div');
+            raindrop.className = 'raindrop';
+            raindrop.style.left = Math.random() * 100 + '%';
+            raindrop.style.animationDelay = Math.random() * 2 + 's';
+            raindrop.style.animationDuration = Math.random() * 1 + 1.5 + 's';
+            
+            document.getElementById('rain').appendChild(raindrop);
+            
+            setTimeout(() => {
+                raindrop.remove();
+            }, 3000);
+        }
+        
+        // Initialize city
+        createBuildings();
+        
+        // Create motorcycles periodically
+        setInterval(createMotorcycle, 3000);
+        
+        // Create particles
+        setInterval(createParticle, 500);
+        
+        // Create rain
+        setInterval(createRain, 200);
+        
+        // Line numbers functionality
         const codeEditor = document.getElementById('codeEditor');
         const lineNumbers = document.getElementById('lineNumbers');
         
@@ -335,95 +540,79 @@ retroAnimation();"></textarea>
             lineNumbers.scrollTop = codeEditor.scrollTop;
         });
         
-        // Initialize line numbers
         updateLineNumbers();
         
-        // Code execution
+        // Code compilation and execution
+        function compileCode() {
+            const outputContent = document.getElementById('outputContent');
+            const languageSelector = document.getElementById('languageSelector');
+            const language = languageSelector.value;
+            
+            outputContent.textContent = `Compiling ${language} code...\n`;
+            outputContent.textContent += 'Motorcycles slowing down...\n';
+            outputContent.textContent += 'Neon lights dimming...\n';
+            
+            setTimeout(() => {
+                outputContent.textContent += `✓ Compilation successful!\n`;
+                outputContent.textContent += 'Ready for execution...\n';
+                outputContent.textContent += '> _';
+            }, 2000);
+        }
+        
         function runCode() {
             const code = codeEditor.value;
             const outputContent = document.getElementById('outputContent');
+            const languageSelector = document.getElementById('languageSelector');
+            const language = languageSelector.value;
             
-            try {
-                // Clear previous output
-                outputContent.textContent = 'Executing code...\n\n';
-                
-                // Override console.log to capture output
-                const originalLog = console.log;
-                const outputs = [];
-                console.log = function(...args) {
-                    outputs.push(args.join(' '));
-                    originalLog.apply(console, args);
-                };
-                
-                // Execute the code
-                eval(code);
-                
-                // Restore console.log
-                console.log = originalLog;
-                
-                // Display output
-                if (outputs.length > 0) {
-                    outputContent.textContent += outputs.join('\n') + '\n';
-                } else {
-                    outputContent.textContent += 'Code executed successfully (no output)\n';
+            if (language === 'javascript') {
+                try {
+                    outputContent.textContent = 'Executing JavaScript...\n\n';
+                    
+                    const originalLog = console.log;
+                    const outputs = [];
+                    console.log = function(...args) {
+                        outputs.push(args.join(' '));
+                        originalLog.apply(console, args);
+                    };
+                    
+                    eval(code);
+                    console.log = originalLog;
+                    
+                    if (outputs.length > 0) {
+                        outputContent.textContent += outputs.join('\n') + '\n';
+                    } else {
+                        outputContent.textContent += 'Code executed successfully\n';
+                    }
+                    
+                    outputContent.textContent += '\n> Execution complete - motorcycles accelerating';
+                    
+                } catch (error) {
+                    outputContent.textContent += 'Error: ' + error.message + '\n';
+                    outputContent.textContent += '\n> Execution failed - system alert';
                 }
-                
-                outputContent.textContent += '\n> Code execution complete';
-                
-            } catch (error) {
-                outputContent.textContent += 'Error: ' + error.message + '\n';
-                outputContent.textContent += '\n> Code execution failed';
+            } else {
+                outputContent.textContent = `Running ${language} code...\n`;
+                outputContent.textContent += 'Feature coming soon in next update...\n';
+                outputContent.textContent += '> Currently supports JavaScript execution';
             }
         }
         
         function clearOutput() {
-            document.getElementById('outputContent').textContent = 'Output cleared...\n> _';
+            document.getElementById('outputContent').textContent = 'Output cleared...\nNeo Tokyo systems reset...\n> _';
         }
         
-        function saveCode() {
-            const code = codeEditor.value;
-            const blob = new Blob([code], { type: 'text/javascript' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'retro_code_' + new Date().getTime() + '.js';
-            a.click();
-            URL.revokeObjectURL(url);
+        // Update current time
+        function updateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString();
+            document.getElementById('currentTime').textContent = `Neo Tokyo Time: ${timeString}`;
         }
         
-        // Theme switching
-        const themeSelector = document.getElementById('themeSelector');
-        const themes = {
-            synthwave: {
-                primary: '#ff00ff',
-                secondary: '#00ffff',
-                accent: '#ffff00'
-            },
-            cyberpunk: {
-                primary: '#00ff00',
-                secondary: '#ff0080',
-                accent: '#0080ff'
-            },
-            neon: {
-                primary: '#ff6600',
-                secondary: '#00ff99',
-                accent: '#ff0099'
-            },
-            vaporwave: {
-                primary: '#ff00aa',
-                secondary: '#00aaff',
-                accent: '#aa00ff'
-            }
-        };
+        setInterval(updateTime, 1000);
+        updateTime();
         
-        themeSelector.addEventListener('change', (e) => {
-            const theme = themes[e.target.value];
-            document.documentElement.style.setProperty('--primary-color', theme.primary);
-            document.documentElement.style.setProperty('--secondary-color', theme.secondary);
-            document.documentElement.style.setProperty('--accent-color', theme.accent);
-        });
-        
-        // Typing sound effect (visual feedback)
+        // Typing effect
         codeEditor.addEventListener('input', () => {
             codeEditor.style.boxShadow = 'inset 0 0 20px rgba(0, 255, 255, 0.5)';
             setTimeout(() => {
@@ -431,29 +620,20 @@ retroAnimation();"></textarea>
             }, 100);
         });
         
-        // Random glitch effect
-        function glitchEffect() {
-            const logo = document.querySelector('.logo');
-            const originalText = logo.textContent;
-            const glitchChars = '!@#$%^&*()_+[]{}|;:,.<>?';
-            
-            let glitchedText = '';
-            for (let i = 0; i < originalText.length; i++) {
-                if (Math.random() < 0.1) {
-                    glitchedText += glitchChars[Math.floor(Math.random() * glitchChars.length)];
-                } else {
-                    glitchedText += originalText[i];
+        // Random city effects
+        function cityGlitch() {
+            const buildings = document.querySelectorAll('.building');
+            buildings.forEach(building => {
+                if (Math.random() < 0.3) {
+                    building.style.filter = 'hue-rotate(' + Math.random() * 360 + 'deg)';
+                    setTimeout(() => {
+                        building.style.filter = 'none';
+                    }, 200);
                 }
-            }
-            
-            logo.textContent = glitchedText;
-            setTimeout(() => {
-                logo.textContent = originalText;
-            }, 100);
+            });
         }
         
-        // Random glitch every 10-20 seconds
-        setInterval(glitchEffect, Math.random() * 10000 + 10000);
+        setInterval(cityGlitch, 5000);
     </script>
 </body>
 </html>
